@@ -1,6 +1,6 @@
 {
   "name": "cirrus-tlValidate",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "authors": [
     "Marco Bachmann <mb@triarc-labs.com>"
   ],
@@ -18,6 +18,6 @@
   ],
   "endpoint": "https://github.com/triarc/cirrus-tlValidate.git",
   "dependencies": {
-    "cirrus-utils": "~0.0.1"
+    "cirrus-utils": "~0.0.5"
   }
 }
