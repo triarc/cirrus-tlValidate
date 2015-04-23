@@ -21,6 +21,6 @@
   },
   "endpoint": "https://github.com/triarc/cirrus-tlValidate.git",
   "dependencies": {
-    "cirrus-utils": "~0.0.5"
+    "cirrus-utils": "~0.1.0"
   }
 }
