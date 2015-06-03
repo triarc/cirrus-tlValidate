@@ -13,7 +13,8 @@ mod.directive('tlValidate', [
                 validationText: '=',
                 validateNow: '=',
                 explicit: '=',
-                showRequired: '='
+                showRequired: '=',
+                clearValidationErrors: '='
             },
             compile: function (elem, attr, transclude) {
                 return {
@@ -111,6 +112,12 @@ mod.directive('tlValidate', [
                             else {
                                 validationRequiredSpan.hide();
                                 hideValidation();
+                            }
+                        });
+                        scope.$watch("clearValidationErrors", function () {
+                            if (scope.clearValidationErrors) {
+                                hideValidation();
+                                scope.clearValidationErrors = false;
                             }
                         });
                         var getTooltipElement = (function () {
