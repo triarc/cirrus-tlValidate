@@ -247,7 +247,7 @@ mod.directive('tlOnlyNum', function () {
         restrict: 'A',
         link: function (scope, element, attr, ctrl) {
             function inputValue(val) {
-                if (val) {
+                if (angular.isString(val)) {
                     var digits = val.replace(/[^0-9.,]/g, '');
                     if (digits !== val) {
                         ctrl.$setViewValue(digits);
