@@ -241,7 +241,7 @@ mod.directive('tlRequiredAny', function () {
         }
     };
 });
-mod.directive('tlOnlyNum', function () { return function () {
+mod.directive('tlOnlyNum', function () {
     return {
         require: 'ngModel',
         restrict: 'A',
@@ -260,7 +260,7 @@ mod.directive('tlOnlyNum', function () { return function () {
             ctrl.$parsers.push(inputValue);
         }
     };
-}; });
+});
 var INTEGER_REGEXP = /^\-?\d+$/;
 mod.directive('tlSmartInteger', function () {
     return {
