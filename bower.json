@@ -1,9 +1,6 @@
 {
   "name": "cirrus-tlValidate",
-  "version": "0.0.11",
-  "authors": [
-    "Marco Bachmann <mb@triarc-labs.com>"
-  ],
+  "version": "0.0.12",
   "main": "tlValidate.js",
   "moduleType": [
     "globals"

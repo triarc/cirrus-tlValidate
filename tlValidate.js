@@ -3,18 +3,20 @@ mod.directive('tlValidate', [
     '$translate',
     '$animate',
     '$compile',
-    function ($translate, $animate, $compile) {
+    '$templateCache',
+    function ($translate, $animate, $compile, $templateCache) {
         return {
             restrict: 'E',
             scope: {
                 target: '=',
-                labelText: '=',
+                labelText: '&',
                 contextHelp: '=',
                 validationText: '=',
                 validateNow: '=',
                 explicit: '=',
                 showRequired: '=',
-                clearValidationErrors: '='
+                clearValidationErrors: '=',
+                labelTemplate: '&'
             },
             compile: function (elem, attr, transclude) {
                 return {
@@ -55,7 +57,7 @@ mod.directive('tlValidate', [
                             // center the validation error around the label for checkboxes
                             if (centerPlacement) {
                                 formGroup.append(label);
-                                var valueDiv = $('<label class="tooltip-placeholder control-label-text label-text"/>').text(scope.labelText);
+                                var valueDiv = $('<label class="tooltip-placeholder control-label-text label-text"/>');
                                 valueDiv.append(iElement.children());
                                 valueDiv.addClass(cssValue);
                                 formGroup.append(valueDiv).appendTo(iElement);
@@ -63,7 +65,7 @@ mod.directive('tlValidate', [
                             else {
                                 tooltipPlaceholder.addClass("tooltip-placeholder");
                                 formGroup.append(label).append(tooltipPlaceholder.addClass(cssValue).append(iElement.children())).appendTo(iElement);
-                                tooltipPlaceholder.append($("<text />").addClass("control-label-text label-text").text(scope.labelText));
+                                tooltipPlaceholder.append($("<text />").addClass("control-label-text label-text"));
                             }
                             validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
                             validationRequiredSpan.hide();
@@ -73,7 +75,7 @@ mod.directive('tlValidate', [
                             }
                         }
                         else {
-                            var labelDiv = $('<label class="control-label"/>').addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text").text(scope.labelText));
+                            var labelDiv = $('<label class="control-label"/>').addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text"));
                             formGroup.append(labelDiv);
                             validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
                             validationRequiredSpan.hide();
@@ -96,14 +98,16 @@ mod.directive('tlValidate', [
                             }
                         });
                         // check if the language string is updated fro the label
-                        scope.$watch("labelText", function () {
-                            iElement.find(".control-label-text").text(scope.labelText);
-                            //iElement.find("control-label-text").first().contents().filter(function () {
-                            //        return this.nodeType == 3;
-                            //    }).val('<span class="control-label-text" > ' + scope.labelText + ' </span >');
-                        });
-                        scope.$watch("target", function (newValue) {
-                            scope.target = newValue;
+                        scope.$watch("labelText()+labelTemplate()", function () {
+                            var template = scope.labelTemplate();
+                            var labelElement = iElement.find(".control-label-text");
+                            if (angular.isString(template)) {
+                                var template = $templateCache.get(template);
+                                $compile(template)(scope.$parent.$parent).appendTo(labelElement);
+                            }
+                            else {
+                                labelElement.text(scope.labelText());
+                            }
                         });
                         scope.$watch("showRequired", function () {
                             if (scope.showRequired || isRequired) {
