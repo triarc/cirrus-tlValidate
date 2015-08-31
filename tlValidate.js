@@ -10,7 +10,7 @@ mod.directive('tlValidate', [
             scope: {
                 target: '=',
                 labelText: '&',
-                contextHelp: '=',
+                contextHelp: '&',
                 validationText: '=',
                 validateNow: '=',
                 explicit: '=',
@@ -86,15 +86,26 @@ mod.directive('tlValidate', [
                             labelDiv.append(contextHelpDiv);
                             formGroup.append(el.append(iElement.children())).appendTo(iElement);
                         }
-                        scope.$watch("contextHelp", function () {
+                        scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
-                            if (Triarc.hasValue(scope.contextHelp)) {
-                                contextHelp.attr("popover", scope.contextHelp);
-                                $compile(contextHelp)(scope);
+                            var label = iElement.find(".control-label");
+                            if (Triarc.strNotEmpty(scope.contextHelp)) {
+                                if (attr.has("tl-context-help-badge")) {
+                                    contextHelp.attr("popover", scope.contextHelp);
+                                    $compile(contextHelp)(scope);
+                                }
+                                if (attr.has("tl-context-help-link")) {
+                                    label.attr("popover", scope.contextHelp);
+                                    $compile(label)(scope);
+                                    label.addClass("lablel-with-help");
+                                }
                                 contextHelp.show();
                             }
                             else {
                                 contextHelp.hide();
+                                label.removeAttr("popover");
+                                label.removeClass("lablel-with-help");
+                                $compile(label)(scope);
                             }
                         });
                         // check if the language string is updated fro the label
