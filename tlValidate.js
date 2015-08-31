@@ -88,18 +88,18 @@ mod.directive('tlValidate', [
                         }
                         scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
-                            var label = iElement.find(".control-label");
+                            var label = iElement.find(".control-label-text");
                             if (Triarc.strNotEmpty(scope.contextHelp())) {
                                 if (attrs.hasOwnProperty("tlContextHelpBadge")) {
                                     contextHelp.attr("popover", scope.contextHelp());
                                     $compile(contextHelp)(scope);
+                                    contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
                                     label.attr("popover", scope.contextHelp());
                                     $compile(label)(scope);
                                     label.addClass("lablel-with-help");
                                 }
-                                contextHelp.show();
                             }
                             else {
                                 contextHelp.hide();
