@@ -90,11 +90,11 @@ mod.directive('tlValidate', [
                             var contextHelp = iElement.find(".context-help");
                             var label = iElement.find(".control-label");
                             if (Triarc.strNotEmpty(scope.contextHelp())) {
-                                if (attrs.hasOwnProperty("tl-context-help-badge")) {
+                                if (attrs.hasOwnProperty("tlContextHelpBadge")) {
                                     contextHelp.attr("popover", scope.contextHelp());
                                     $compile(contextHelp)(scope);
                                 }
-                                if (attrs.hasOwnProperty.has("tl-context-help-link")) {
+                                if (attrs.hasOwnProperty("tlContextHelpLink")) {
                                     label.attr("popover", scope.contextHelp());
                                     $compile(label)(scope);
                                     label.addClass("lablel-with-help");
