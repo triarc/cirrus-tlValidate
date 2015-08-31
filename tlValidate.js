@@ -107,7 +107,7 @@ mod.directive('tlValidate', [
                             }
                         });
                         // check if the language string is updated fro the label
-                        scope.$watch("labelText()+labelTemplate()", function () {
+                        scope.$watchGroup(["labelText()", "labelTemplate()"], function () {
                             var template = scope.labelTemplate();
                             var labelElement = iElement.find(".control-label-text");
                             if (angular.isString(template)) {
