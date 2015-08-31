@@ -96,17 +96,13 @@ mod.directive('tlValidate', [
                                     contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
-                                    label.attr("popover", scope.contextHelp());
-                                    label.attr("popover-trigger", "mouseenter");
+                                    label.attr("popover", scope.contextHelp()).attr("popover-trigger", "mouseenter").attr("popover-append-to-body", "true").addClass("lablel-with-help");
                                     $compile(label)(scope);
-                                    label.addClass("lablel-with-help");
                                 }
                             }
                             else {
                                 contextHelp.hide();
-                                label.removeAttr("popover");
-                                label.attr("popover-trigger");
-                                label.removeClass("lablel-with-help");
+                                label.removeAttr("popover").removeAttr("popover-append-to-body").removeAttr("popover-trigger").removeClass("lablel-with-help");
                                 $compile(label)(scope);
                             }
                         });
