@@ -97,6 +97,7 @@ mod.directive('tlValidate', [
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
                                     label.attr("popover", scope.contextHelp());
+                                    label.attr("popover-trigger", "mouseenter");
                                     $compile(label)(scope);
                                     label.addClass("lablel-with-help");
                                 }
@@ -104,6 +105,7 @@ mod.directive('tlValidate', [
                             else {
                                 contextHelp.hide();
                                 label.removeAttr("popover");
+                                label.attr("popover-trigger");
                                 label.removeClass("lablel-with-help");
                                 $compile(label)(scope);
                             }
