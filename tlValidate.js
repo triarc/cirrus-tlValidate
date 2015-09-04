@@ -1,22 +1,22 @@
 var mod = angular.module("tlValidate", []);
-mod.directive('tlValidate', [
-    '$translate',
-    '$animate',
-    '$compile',
-    '$templateCache',
+mod.directive("tlValidate", [
+    "$translate",
+    "$animate",
+    "$compile",
+    "$templateCache",
     function ($translate, $animate, $compile, $templateCache) {
         return {
-            restrict: 'E',
+            restrict: "E",
             scope: {
-                target: '=',
-                labelText: '&',
-                contextHelp: '&',
-                validationText: '=',
-                validateNow: '=',
-                explicit: '=',
-                showRequired: '=',
-                clearValidationErrors: '=',
-                labelTemplate: '&'
+                target: "=",
+                labelText: "&",
+                contextHelp: "&",
+                validationText: "=",
+                validateNow: "=",
+                explicit: "=",
+                showRequired: "=",
+                clearValidationErrors: "=",
+                labelTemplate: "&"
             },
             compile: function (elem, attr, transclude) {
                 return {
@@ -44,20 +44,20 @@ mod.directive('tlValidate', [
                         var isCheckbox = element.attr("type") == "checkbox";
                         var validationRequiredSpan;
                         // todo configurable
-                        var el = $('<div />').addClass(cssValue).addClass("tooltip-placeholder");
-                        var formGroup = $('<div class="form-group"/>');
-                        var contextHelpDiv = $('<span>?</span>').addClass("badge").addClass("context-help");
+                        var el = $("<div />").addClass(cssValue).addClass("tooltip-placeholder");
+                        var formGroup = $("<div class=\"form-group\"/>");
+                        var contextHelpDiv = $("<span>?</span>").addClass("badge").addClass("context-help");
                         contextHelpDiv.attr("popover-placement", helpPlacement);
                         contextHelpDiv.attr("popover-trigger", "mouseenter");
                         contextHelpDiv.hide();
                         if (isCheckbox) {
-                            var label = $('<label class="control-label"/>').addClass(cssLabel);
+                            var label = $("<label class=\"control-label\"/>").addClass(cssLabel);
                             label.append(contextHelpDiv);
-                            var tooltipPlaceholder = $('<label />');
+                            var tooltipPlaceholder = $("<label />");
                             // center the validation error around the label for checkboxes
                             if (centerPlacement) {
                                 formGroup.append(label);
-                                var valueDiv = $('<label class="tooltip-placeholder control-label-text label-text"/>');
+                                var valueDiv = $("<label class=\"tooltip-placeholder control-label-text label-text\"/>");
                                 valueDiv.append(iElement.children());
                                 valueDiv.addClass(cssValue);
                                 formGroup.append(valueDiv).appendTo(iElement);
@@ -75,7 +75,7 @@ mod.directive('tlValidate', [
                             }
                         }
                         else {
-                            var labelDiv = $('<label class="control-label"/>').addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text"));
+                            var labelDiv = $("<label class=\"control-label\"/>").addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text"));
                             formGroup.append(labelDiv);
                             validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
                             validationRequiredSpan.hide();
@@ -152,10 +152,10 @@ mod.directive('tlValidate', [
                             }
                             for (var err in scope.target.$error) {
                                 if (scope.target.$error[err] == true) {
-                                    return $translate.instant('validator_' + err);
+                                    return $translate.instant("validator_" + err);
                                 }
                             }
-                            return '';
+                            return "";
                         };
                         var validationElement;
                         var remove = function (valEl) {
@@ -166,7 +166,7 @@ mod.directive('tlValidate', [
                         var hideValidation = function () {
                             if (angular.isObject(validationElement)) {
                                 var tempValEl = validationElement;
-                                tempValEl.removeClass('in');
+                                tempValEl.removeClass("in");
                                 //$animate.addClass(validationElement, "out");
                                 remove(tempValEl);
                             }
@@ -175,11 +175,11 @@ mod.directive('tlValidate', [
                             if (angular.isObject(validationElement)) {
                                 hideValidation();
                             }
-                            validationElement = $($.parseHTML('<div class="tooltip fade bottom" role="tooltip">' + '<div class="tooltip-arrow"></div>' + '<div class="tooltip-inner">' + getErrorName() + '</div></div>'));
+                            validationElement = $($.parseHTML("<div class=\"tooltip fade bottom\" role=\"tooltip\">" + "<div class=\"tooltip-arrow\"></div>" + "<div class=\"tooltip-inner\">" + getErrorName() + "</div></div>"));
                             var tooltipElement = getTooltipElement();
                             tooltipElement.after(validationElement);
                             setTimeout(function () {
-                                validationElement.addClass('in');
+                                validationElement.addClass("in");
                             });
                             tooltipElement.bind("destroy", function () {
                                 hideValidation();
@@ -195,7 +195,7 @@ mod.directive('tlValidate', [
                             }
                         });
                         // manual trigger for the validation
-                        scope.$watch('validateNow', function () {
+                        scope.$watch("validateNow", function () {
                             if (scope.validateNow) {
                                 scope.validateElement();
                                 // when explicit is set, always reset the validate now so
@@ -206,7 +206,7 @@ mod.directive('tlValidate', [
                             }
                         });
                         // observing the error flag on the form when the element has been updated and is then invalid
-                        scope.$watch('target.$error', function () {
+                        scope.$watch("target.$error", function () {
                             if (!scope.target) {
                                 // hidden form elements 
                                 return;
@@ -228,12 +228,12 @@ mod.directive('tlValidate', [
         };
     }
 ]);
-mod.directive('tlRequiredAny', function () {
+mod.directive("tlRequiredAny", function () {
     function isEmpty(value) {
-        return angular.isUndefined(value) || (angular.isArray(value) && value.length === 0) || value === '' || value === null || value !== value;
+        return angular.isUndefined(value) || (angular.isArray(value) && value.length === 0) || value === "" || value === null;
     }
     return {
-        require: '?ngModel',
+        require: "?ngModel",
         link: function (scope, elm, attr, ctrl) {
             if (!ctrl)
                 return;
@@ -248,20 +248,20 @@ mod.directive('tlRequiredAny', function () {
             //ctrl.$formatters.push(validator);
             //ctrl.$parsers.unshift(validator);
             ctrl.$validators["requiredAny"] = validator;
-            attr.$observe('required', function () {
+            attr.$observe("required", function () {
                 validator(ctrl.$viewValue);
             });
         }
     };
 });
-mod.directive('tlOnlyNum', function () {
+mod.directive("tlOnlyNum", function () {
     return {
-        require: 'ngModel',
-        restrict: 'A',
+        require: "ngModel",
+        restrict: "A",
         link: function (scope, element, attr, ctrl) {
-            function inputValue(val) {
+            ctrl.$parsers.push(function (val) {
                 if (angular.isString(val)) {
-                    var digits = val.replace(/[^0-9.,]/g, '');
+                    var digits = val.replace(/[^0-9.,]/g, "");
                     if (digits !== val) {
                         ctrl.$setViewValue(digits);
                         ctrl.$render();
@@ -269,100 +269,117 @@ mod.directive('tlOnlyNum', function () {
                     return parseFloat(digits);
                 }
                 return undefined;
-            }
-            ctrl.$parsers.push(inputValue);
+            });
         }
     };
 });
 var INTEGER_REGEXP = /^\-?\d+$/;
-mod.directive('tlSmartInteger', function () {
+mod.directive("tlSmartInteger", function () {
     return {
-        require: 'ngModel',
+        require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
-            ctrl.$parsers.unshift(function (viewValue) {
-                if (INTEGER_REGEXP.test(viewValue)) {
+            if (!INTEGER_REGEXP.test(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+                ctrl.$setValidity("integer", false);
+            }
+            ctrl.$parsers.unshift(function (value) {
+                if (INTEGER_REGEXP.test(value)) {
                     // it is valid
-                    ctrl.$setValidity('integer', true);
-                    return viewValue;
-                }
-                else {
-                    // it is invalid, return undefined (no model update)
-                    ctrl.$setValidity('integer', false);
-                    return undefined;
-                }
-            });
-        }
-    };
-});
-mod.directive('tlSmartFloat', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            ctrl.$parsers.unshift(function (viewValue) {
-                if (Triarc.validFloat(viewValue)) {
-                    ctrl.$setValidity('float', true);
-                    return parseFloat(viewValue.replace(',', '.'));
-                }
-                else {
-                    ctrl.$setValidity('float', false);
-                    return undefined;
-                }
-            });
-        }
-    };
-});
-mod.directive('tlPrice', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            if (!angular.isNumber(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
-                ctrl.$setValidity('price', false);
-            }
-            ctrl.$parsers.unshift(function (viewValue) {
-                if (Triarc.validFloat(viewValue)) {
-                    ctrl.$setValidity('price', true);
-                    return parseFloat(viewValue.replace(',', '.'));
-                }
-                else {
-                    ctrl.$setValidity('price', false);
-                    return undefined;
-                }
-            });
-        }
-    };
-});
-mod.directive('tlGreaterThanZero', function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, elm, attrs, ctrl) {
-            if (!Triarc.validNumber(ctrl.$viewValue, 0)) {
-                ctrl.$setValidity('greaterThanZero', false);
-            }
-            ctrl.$parsers.unshift(function (viewValue) {
-                if (Triarc.validNumber(ctrl.$viewValue, 0)) {
-                    ctrl.$setValidity('greaterThanZero', true);
-                    return viewValue;
-                }
-                else {
-                    ctrl.$setValidity('greaterThanZero', false);
-                    return undefined;
-                }
-            });
-        }
-    };
-});
-mod.directive('tlAlphanumeric', function () {
-    return {
-        require: 'ngModel',
-        restrict: 'A',
-        link: function (scope, elem, attr, ngModel) {
-            var validator = function (value) {
-                if (/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value)) {
-                    ngModel.$setValidity('alphanumeric', true);
+                    ctrl.$setValidity("integer", true);
                     return value;
                 }
                 else {
-                    ngModel.$setValidity('alphanumeric', false);
+                    // it is invalid, return undefined (no model update)
+                    ctrl.$setValidity("integer", false);
+                    return undefined;
+                }
+            });
+            ctrl.$formatters.push(function (value) {
+                ctrl.$setValidity("integer", INTEGER_REGEXP.test(value));
+                return value;
+            });
+        }
+    };
+});
+mod.directive("tlSmartFloat", function () {
+    return {
+        require: "ngModel",
+        link: function (scope, elm, attrs, ctrl) {
+            if (!Triarc.validFloat(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+                ctrl.$setValidity("float", false);
+            }
+            ctrl.$parsers.unshift(function (value) {
+                if (Triarc.validFloat(value)) {
+                    ctrl.$setValidity("float", true);
+                    return parseFloat(value.replace(",", "."));
+                }
+                else {
+                    ctrl.$setValidity("float", false);
+                    return undefined;
+                }
+            });
+            ctrl.$formatters.push(function (value) {
+                ctrl.$setValidity("float", Triarc.validFloat(value));
+                return value;
+            });
+        }
+    };
+});
+mod.directive("tlPrice", function () {
+    return {
+        require: "ngModel",
+        link: function (scope, elm, attrs, ctrl) {
+            if (!angular.isNumber(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+                ctrl.$setValidity("price", false);
+            }
+            ctrl.$parsers.unshift(function (viewValue) {
+                if (Triarc.validFloat(viewValue)) {
+                    ctrl.$setValidity("price", true);
+                    return parseFloat(viewValue.replace(",", "."));
+                }
+                else {
+                    ctrl.$setValidity("price", false);
+                    return undefined;
+                }
+            });
+            ctrl.$formatters.push(function (value) {
+                ctrl.$setValidity("price", angular.isNumber(ctrl.$viewValue));
+                return value;
+            });
+        }
+    };
+});
+mod.directive("tlGreaterThanZero", function () {
+    return {
+        require: "ngModel",
+        link: function (scope, elm, attrs, ctrl) {
+            if (!Triarc.validNumber(ctrl.$viewValue, 0)) {
+                ctrl.$setValidity("greaterThanZero", false);
+            }
+            ctrl.$parsers.unshift(function (viewValue) {
+                if (Triarc.validNumber(ctrl.$viewValue, 0)) {
+                    ctrl.$setValidity("greaterThanZero", true);
+                    return viewValue;
+                }
+                else {
+                    ctrl.$setValidity("greaterThanZero", false);
+                    return undefined;
+                }
+            });
+        }
+    };
+});
+mod.directive("tlAlphanumeric", function () {
+    return {
+        require: "ngModel",
+        restrict: "A",
+        link: function (scope, elem, attr, ngModel) {
+            var validator = function (value) {
+                if (/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value)) {
+                    ngModel.$setValidity("alphanumeric", true);
+                    return value;
+                }
+                else {
+                    ngModel.$setValidity("alphanumeric", false);
                     return undefined;
                 }
             };
