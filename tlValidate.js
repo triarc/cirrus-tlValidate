@@ -278,10 +278,14 @@ mod.directive("tlSmartInteger", function () {
     return {
         require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
-            if (!INTEGER_REGEXP.test(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+            if (!INTEGER_REGEXP.test(ctrl.$viewValue) && Triarc.strNotEmpty(ctrl.$viewValue)) {
                 ctrl.$setValidity("integer", false);
             }
             ctrl.$parsers.unshift(function (value) {
+                if (Triarc.strIsEmpty(value)) {
+                    ctrl.$setValidity("integer", true);
+                    return undefined;
+                }
                 if (INTEGER_REGEXP.test(value)) {
                     // it is valid
                     ctrl.$setValidity("integer", true);
@@ -294,7 +298,7 @@ mod.directive("tlSmartInteger", function () {
                 }
             });
             ctrl.$formatters.push(function (value) {
-                ctrl.$setValidity("integer", INTEGER_REGEXP.test(value));
+                ctrl.$setValidity("integer", INTEGER_REGEXP.test(value) || Triarc.strIsEmpty(value));
                 return value;
             });
         }
@@ -304,10 +308,14 @@ mod.directive("tlSmartFloat", function () {
     return {
         require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
-            if (!Triarc.validFloat(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+            if (!Triarc.validFloat(ctrl.$viewValue) && Triarc.strNotEmpty(ctrl.$viewValue)) {
                 ctrl.$setValidity("float", false);
             }
             ctrl.$parsers.unshift(function (value) {
+                if (Triarc.strIsEmpty(value)) {
+                    ctrl.$setValidity("float", true);
+                    return undefined;
+                }
                 if (Triarc.validFloat(value)) {
                     ctrl.$setValidity("float", true);
                     return parseFloat(value.replace(",", "."));
@@ -318,7 +326,7 @@ mod.directive("tlSmartFloat", function () {
                 }
             });
             ctrl.$formatters.push(function (value) {
-                ctrl.$setValidity("float", Triarc.validFloat(value));
+                ctrl.$setValidity("float", Triarc.validFloat(value) || Triarc.strIsEmpty(value));
                 return value;
             });
         }
@@ -328,7 +336,7 @@ mod.directive("tlPrice", function () {
     return {
         require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
-            if (!angular.isNumber(ctrl.$viewValue) || Triarc.hasNoValue(ctrl.$viewValue)) {
+            if (!angular.isNumber(ctrl.$viewValue)) {
                 ctrl.$setValidity("price", false);
             }
             ctrl.$parsers.unshift(function (viewValue) {
