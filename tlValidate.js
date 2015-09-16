@@ -1,10 +1,6 @@
 var mod = angular.module("tlValidate", []);
 mod.directive("tlValidate", [
-    "$translate",
-    "$animate",
-    "$compile",
-    "$templateCache",
-    function ($translate, $animate, $compile, $templateCache) {
+    "$translate", "$animate", "$compile", "$templateCache", function ($translate, $animate, $compile, $templateCache) {
         return {
             restrict: "E",
             scope: {
@@ -96,13 +92,20 @@ mod.directive("tlValidate", [
                                     contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
-                                    label.attr("popover", scope.contextHelp()).attr("popover-trigger", "mouseenter").attr("popover-append-to-body", "true").addClass("lablel-with-help");
+                                    label.attr("popover", scope.contextHelp())
+                                        .attr("popover-trigger", "mouseenter")
+                                        .attr("popover-append-to-body", "true")
+                                        .attr("popover-placement", helpPlacement)
+                                        .addClass("lablel-with-help");
                                     $compile(label)(scope);
                                 }
                             }
                             else {
                                 contextHelp.hide();
-                                label.removeAttr("popover").removeAttr("popover-append-to-body").removeAttr("popover-trigger").removeClass("lablel-with-help");
+                                label.removeAttr("popover")
+                                    .removeAttr("popover-append-to-body")
+                                    .removeAttr("popover-trigger")
+                                    .removeClass("lablel-with-help");
                                 $compile(label)(scope);
                             }
                         });
@@ -175,7 +178,10 @@ mod.directive("tlValidate", [
                             if (angular.isObject(validationElement)) {
                                 hideValidation();
                             }
-                            validationElement = $($.parseHTML("<div class=\"tooltip fade bottom\" role=\"tooltip\">" + "<div class=\"tooltip-arrow\"></div>" + "<div class=\"tooltip-inner\">" + getErrorName() + "</div></div>"));
+                            validationElement = $($.parseHTML("<div class=\"tooltip fade bottom\" role=\"tooltip\">" +
+                                "<div class=\"tooltip-arrow\"></div>" +
+                                "<div class=\"tooltip-inner\">"
+                                + getErrorName() + "</div></div>"));
                             var tooltipElement = getTooltipElement();
                             tooltipElement.after(validationElement);
                             setTimeout(function () {
