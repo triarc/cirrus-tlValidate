@@ -7,6 +7,7 @@ mod.directive("tlValidate", [
                 target: "=",
                 labelText: "&",
                 contextHelp: "&",
+                contextHelpAppendToBody: "&",
                 validationText: "=",
                 validateNow: "=",
                 explicit: "=",
@@ -94,7 +95,7 @@ mod.directive("tlValidate", [
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
                                     label.attr("popover", scope.contextHelp())
                                         .attr("popover-trigger", "mouseenter")
-                                        .attr("popover-append-to-body", "true")
+                                        .attr("popover-append-to-body", (scope.contextHelpAppendToBody() || false).toString())
                                         .attr("popover-placement", helpPlacement)
                                         .addClass("lablel-with-help");
                                     $compile(label)(scope);
