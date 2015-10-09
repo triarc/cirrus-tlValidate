@@ -275,6 +275,9 @@ mod.directive("tlOnlyNum", function () {
                     }
                     return parseFloat(digits);
                 }
+                if (angular.isNumber(val)) {
+                    return val;
+                }
                 return undefined;
             });
         }
