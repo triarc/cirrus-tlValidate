@@ -26,6 +26,7 @@ mod.directive("tlValidate", [
                         var centerPlacement = false;
                         var helpPlacement = "";
                         var validationText = null;
+                        var labelElement = null;
                         // non mandatory values
                         !Triarc.strNotEmpty(attrs.cssLabel) ? cssLabel = "col-sm-3" : cssLabel = attrs.cssLabel;
                         !Triarc.strNotEmpty(attrs.cssValue) ? cssValue = "col-sm-9" : cssValue = attrs.cssValue;
@@ -43,13 +44,9 @@ mod.directive("tlValidate", [
                         // todo configurable
                         var el = $("<div />").addClass(cssValue).addClass("tooltip-placeholder");
                         var formGroup = $("<div class=\"form-group\"/>");
-                        var contextHelpDiv = $("<span>?</span>").addClass("badge").addClass("context-help");
-                        contextHelpDiv.attr("popover-placement", helpPlacement);
-                        contextHelpDiv.attr("popover-trigger", "mouseenter");
-                        contextHelpDiv.hide();
                         if (isCheckbox) {
                             var label = $("<label class=\"control-label\"/>").addClass(cssLabel);
-                            label.append(contextHelpDiv);
+                            labelElement = label;
                             var tooltipPlaceholder = $("<label />");
                             // center the validation error around the label for checkboxes
                             if (centerPlacement) {
@@ -73,6 +70,7 @@ mod.directive("tlValidate", [
                         }
                         else {
                             var labelDiv = $("<label class=\"control-label\"/>").addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text"));
+                            labelElement = labelDiv;
                             formGroup.append(labelDiv);
                             validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
                             validationRequiredSpan.hide();
@@ -80,17 +78,21 @@ mod.directive("tlValidate", [
                             if (isRequired) {
                                 validationRequiredSpan.show();
                             }
-                            labelDiv.append(contextHelpDiv);
                             formGroup.append(el.append(iElement.children())).appendTo(iElement);
                         }
                         scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
+                            if (!contextHelp) {
+                                contextHelp = $("<span>?</span>").addClass("badge").addClass("context-help");
+                                contextHelp.attr("popover-placement", helpPlacement);
+                                contextHelp.attr("popover-trigger", "mouseenter");
+                                labelElement.append(contextHelp);
+                            }
                             var label = iElement.find(".control-label-text");
                             if (Triarc.strNotEmpty(scope.contextHelp())) {
                                 if (attrs.hasOwnProperty("tlContextHelpBadge")) {
                                     contextHelp.attr("popover", scope.contextHelp());
                                     $compile(contextHelp)(scope);
-                                    contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
                                     label.attr("popover", scope.contextHelp())
@@ -100,6 +102,7 @@ mod.directive("tlValidate", [
                                         .addClass("lablel-with-help");
                                     $compile(label)(scope);
                                 }
+                                contextHelp.show();
                             }
                             else {
                                 contextHelp.hide();
