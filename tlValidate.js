@@ -4,41 +4,37 @@ mod.directive("tlValidate", [
         return {
             restrict: "E",
             scope: {
-                target: "=",
+                target: "&",
                 labelText: "&",
                 contextHelp: "&",
                 contextHelpAppendToBody: "&",
-                validationText: "=",
+                validationText: "&",
                 validateNow: "=",
-                explicit: "=",
-                showRequired: "=",
+                explicit: "&",
+                showRequired: "&",
                 clearValidationErrors: "=",
                 labelTemplate: "&"
             },
-            compile: function (elem, attr, transclude) {
+            compile: function () {
                 return {
-                    pre: function (scope, iElement, attrs, controller) {
-                    },
-                    post: function (scope, iElement, attrs, controller) {
+                    post: function (scope, iElement, attrs) {
                         var cssLabel = "";
                         var cssValue = "";
                         var placement = "";
                         var centerPlacement = false;
                         var helpPlacement = "";
-                        var validationText = null;
                         // non mandatory values
                         !Triarc.strNotEmpty(attrs.cssLabel) ? cssLabel = "col-sm-3" : cssLabel = attrs.cssLabel;
                         !Triarc.strNotEmpty(attrs.cssValue) ? cssValue = "col-sm-9" : cssValue = attrs.cssValue;
                         !Triarc.strNotEmpty(attrs.placement) ? placement = "bottom" : placement = attrs.placement;
                         !Triarc.strNotEmpty(attrs.centerPlacement) ? centerPlacement = false : centerPlacement = attrs.centerPlacement;
                         !Triarc.strNotEmpty(attrs.helpPlacement) ? helpPlacement = "left" : helpPlacement = attrs.helpPlacement;
-                        !Triarc.strNotEmpty(scope.validationText) ? validationText = null : validationText = scope.validationText;
                         var isRequired = false;
-                        iElement.find("[required],[required-any]").each(function (index, child) {
+                        iElement.find("[required],[required-any]").each(function () {
                             isRequired = true;
                         });
                         var element = iElement.children().first();
-                        var isCheckbox = element.attr("type") == "checkbox";
+                        var isCheckbox = element.attr("type") === "checkbox";
                         var validationRequiredSpan;
                         // todo configurable
                         var el = $("<div />").addClass(cssValue).addClass("tooltip-placeholder");
@@ -86,14 +82,15 @@ mod.directive("tlValidate", [
                         scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
                             var label = iElement.find(".control-label-text");
-                            if (Triarc.strNotEmpty(scope.contextHelp())) {
+                            var helpText = scope.contextHelp();
+                            if (Triarc.strNotEmpty(helpText)) {
                                 if (attrs.hasOwnProperty("tlContextHelpBadge")) {
-                                    contextHelp.attr("popover", scope.contextHelp());
+                                    contextHelp.attr("popover", helpText);
                                     $compile(contextHelp)(scope);
                                     contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
-                                    label.attr("popover", scope.contextHelp())
+                                    label.attr("popover", helpText)
                                         .attr("popover-trigger", "mouseenter")
                                         .attr("popover-append-to-body", (scope.contextHelpAppendToBody() || false).toString())
                                         .attr("popover-placement", helpPlacement)
@@ -115,15 +112,30 @@ mod.directive("tlValidate", [
                             var template = scope.labelTemplate();
                             var labelElement = iElement.find(".control-label-text");
                             if (angular.isString(template)) {
-                                var template = $templateCache.get(template);
+                                template = $templateCache.get(template);
                                 $compile(template)(scope.$parent.$parent).appendTo(labelElement);
                             }
                             else {
                                 labelElement.text(scope.labelText());
                             }
                         });
-                        scope.$watch("showRequired", function () {
-                            if (scope.showRequired || isRequired) {
+                        var validationElement;
+                        var remove = function (valEl) {
+                            if (angular.isObject(valEl)) {
+                                valEl.remove();
+                            }
+                        };
+                        var hideValidation = function () {
+                            if (angular.isObject(validationElement)) {
+                                var tempValEl = validationElement;
+                                tempValEl.removeClass("in");
+                                //$animate.addClass(validationElement, "out");
+                                remove(tempValEl);
+                            }
+                        };
+                        scope.$watch("showRequired()", function () {
+                            var showRequired = scope.showRequired();
+                            if (scope.showRequired && showRequired || isRequired) {
                                 validationRequiredSpan.show();
                             }
                             else {
@@ -151,29 +163,17 @@ mod.directive("tlValidate", [
                             }
                         });
                         var getErrorName = function () {
-                            if (angular.isString(validationText)) {
-                                return validationText;
+                            var text = scope.validationText();
+                            if (angular.isString(text)) {
+                                return text;
                             }
-                            for (var err in scope.target.$error) {
-                                if (scope.target.$error[err] == true) {
+                            var formController = scope.target();
+                            for (var err in formController.$error) {
+                                if (formController.$error[err] === true) {
                                     return $translate.instant("validator_" + err);
                                 }
                             }
                             return "";
-                        };
-                        var validationElement;
-                        var remove = function (valEl) {
-                            if (angular.isObject(valEl)) {
-                                valEl.remove();
-                            }
-                        };
-                        var hideValidation = function () {
-                            if (angular.isObject(validationElement)) {
-                                var tempValEl = validationElement;
-                                tempValEl.removeClass("in");
-                                //$animate.addClass(validationElement, "out");
-                                remove(tempValEl);
-                            }
                         };
                         var showValidation = function () {
                             if (angular.isObject(validationElement)) {
@@ -194,7 +194,8 @@ mod.directive("tlValidate", [
                         };
                         // validate the element and set validation error messages
                         scope.validateElement = (function () {
-                            if (scope.target && scope.target.$invalid == true) {
+                            var formController = scope.target();
+                            if (formController && formController.$invalid === true) {
                                 showValidation();
                             }
                             else {
@@ -207,24 +208,25 @@ mod.directive("tlValidate", [
                                 scope.validateElement();
                                 // when explicit is set, always reset the validate now so
                                 // it can be reset explicitely
-                                if (scope.explicit == true) {
+                                if (scope.explicit() === true) {
                                     scope.validateNow = false;
                                 }
                             }
                         });
                         // observing the error flag on the form when the element has been updated and is then invalid
-                        scope.$watch("target.$error", function () {
-                            if (!scope.target) {
+                        scope.$watch("target().$error", function () {
+                            var formController = scope.target();
+                            if (!formController) {
                                 // hidden form elements 
                                 return;
                             }
-                            if (scope.explicit == true) {
+                            if (scope.explicit() === true) {
                             }
                             else {
-                                if (angular.isObject(scope.target) && scope.target.$invalid == true && scope.target.$dirty) {
+                                if (angular.isObject(formController) && formController.$invalid === true && formController.$dirty) {
                                     scope.validateElement();
                                 }
-                                else if (scope.target.$valid) {
+                                else if (formController.$valid) {
                                     hideValidation();
                                 }
                             }
