@@ -293,7 +293,7 @@ mod.directive("tlSmartInteger", function () {
             ctrl.$parsers.unshift(function (value) {
                 if (Triarc.strIsEmpty(value)) {
                     ctrl.$setValidity("integer", true);
-                    return undefined;
+                    return null;
                 }
                 if (INTEGER_REGEXP.test(value)) {
                     // it is valid
@@ -325,7 +325,7 @@ mod.directive("tlSmartFloat", function () {
             ctrl.$parsers.unshift(function (value) {
                 if (Triarc.strIsEmpty(value)) {
                     ctrl.$setValidity("float", true);
-                    return undefined;
+                    return null;
                 }
                 if (Triarc.validFloat(value)) {
                     ctrl.$setValidity("float", true);
