@@ -290,6 +290,8 @@ mod.directive("tlSmartInteger", function () {
     return {
         require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
+            var min = parseInt(attrs['min']);
+            var max = parseInt(attrs['max']);
             ctrl.$parsers.unshift(function (value) {
                 if (Triarc.strIsEmpty(value)) {
                     ctrl.$setValidity("integer", true);
@@ -297,6 +299,14 @@ mod.directive("tlSmartInteger", function () {
                 }
                 if (INTEGER_REGEXP.test(value)) {
                     // it is valid
+                    if (!isNaN(min) && parseInt(value) < min) {
+                        ctrl.$setValidity("integer", false);
+                        return undefined;
+                    }
+                    if (!isNaN(max) && parseInt(value) > max) {
+                        ctrl.$setValidity("integer", false);
+                        return undefined;
+                    }
                     ctrl.$setValidity("integer", true);
                     return value;
                 }
