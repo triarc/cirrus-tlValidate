@@ -299,16 +299,23 @@ mod.directive("tlSmartInteger", function () {
                 }
                 if (INTEGER_REGEXP.test(value)) {
                     // it is valid
+                    ctrl.$setValidity("integer", true);
+                    var shouldUpdate = true;
                     if (!isNaN(min) && parseInt(value) < min) {
-                        ctrl.$setValidity("integer", false);
-                        return undefined;
+                        ctrl.$setValidity("min", false);
+                        shouldUpdate = false;
+                    }
+                    else {
+                        ctrl.$setValidity("min", true);
                     }
                     if (!isNaN(max) && parseInt(value) > max) {
-                        ctrl.$setValidity("integer", false);
-                        return undefined;
+                        ctrl.$setValidity("max", false);
+                        shouldUpdate = false;
                     }
-                    ctrl.$setValidity("integer", true);
-                    return value;
+                    else {
+                        ctrl.$setValidity("max", true);
+                    }
+                    return shouldUpdate ? value : undefined;
                 }
                 else {
                     // it is invalid, return undefined (no model update)
