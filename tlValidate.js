@@ -302,22 +302,19 @@ mod.directive("tlSmartInteger", function () {
                 if (INTEGER_REGEXP.test(value)) {
                     // it is valid
                     ctrl.$setValidity("integer", true);
-                    var shouldUpdate = true;
                     if (!isNaN(min) && parseInt(value) < min) {
                         ctrl.$setValidity("min", false);
-                        shouldUpdate = false;
                     }
                     else {
                         ctrl.$setValidity("min", true);
                     }
                     if (!isNaN(max) && parseInt(value) > max) {
                         ctrl.$setValidity("max", false);
-                        shouldUpdate = false;
                     }
                     else {
                         ctrl.$setValidity("max", true);
                     }
-                    return shouldUpdate ? value : undefined;
+                    return value;
                 }
                 else {
                     // it is invalid, return undefined (no model update)
@@ -355,22 +352,19 @@ mod.directive("tlSmartFloat", function () {
                 if (Triarc.validFloat(value)) {
                     ctrl.$setValidity("float", true);
                     var parsedValue = parseFloat(value.replace(",", "."));
-                    var shouldUpdate = true;
                     if (!isNaN(min) && parsedValue < min) {
                         ctrl.$setValidity("min", false);
-                        shouldUpdate = false;
                     }
                     else {
                         ctrl.$setValidity("min", true);
                     }
                     if (!isNaN(max) && parsedValue > max) {
                         ctrl.$setValidity("max", false);
-                        shouldUpdate = false;
                     }
                     else {
                         ctrl.$setValidity("max", true);
                     }
-                    return shouldUpdate ? parseFloat(value.replace(",", ".")) : undefined;
+                    return parsedValue;
                 }
                 else {
                     ctrl.$setValidity("float", false);
