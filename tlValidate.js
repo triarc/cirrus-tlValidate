@@ -295,6 +295,8 @@ mod.directive("tlSmartInteger", function () {
             ctrl.$parsers.unshift(function (value) {
                 if (Triarc.strIsEmpty(value)) {
                     ctrl.$setValidity("integer", true);
+                    ctrl.$setValidity("min", true);
+                    ctrl.$setValidity("max", true);
                     return null;
                 }
                 if (INTEGER_REGEXP.test(value)) {
@@ -320,6 +322,8 @@ mod.directive("tlSmartInteger", function () {
                 else {
                     // it is invalid, return undefined (no model update)
                     ctrl.$setValidity("integer", false);
+                    ctrl.$setValidity("min", true);
+                    ctrl.$setValidity("max", true);
                     return undefined;
                 }
             });
@@ -336,20 +340,42 @@ mod.directive("tlSmartFloat", function () {
     return {
         require: "ngModel",
         link: function (scope, elm, attrs, ctrl) {
+            var min = parseFloat(attrs['min']);
+            var max = parseFloat(attrs['max']);
             if (!Triarc.validFloat(ctrl.$viewValue) && Triarc.strNotEmpty(ctrl.$viewValue)) {
                 ctrl.$setValidity("float", false);
             }
             ctrl.$parsers.unshift(function (value) {
                 if (Triarc.strIsEmpty(value)) {
                     ctrl.$setValidity("float", true);
+                    ctrl.$setValidity("min", true);
+                    ctrl.$setValidity("max", true);
                     return null;
                 }
                 if (Triarc.validFloat(value)) {
                     ctrl.$setValidity("float", true);
-                    return parseFloat(value.replace(",", "."));
+                    var parsedValue = parseFloat(value.replace(",", "."));
+                    var shouldUpdate = true;
+                    if (!isNaN(min) && parsedValue < min) {
+                        ctrl.$setValidity("min", false);
+                        shouldUpdate = false;
+                    }
+                    else {
+                        ctrl.$setValidity("min", true);
+                    }
+                    if (!isNaN(max) && parsedValue > max) {
+                        ctrl.$setValidity("max", false);
+                        shouldUpdate = false;
+                    }
+                    else {
+                        ctrl.$setValidity("max", true);
+                    }
+                    return shouldUpdate ? parseFloat(value.replace(",", ".")) : undefined;
                 }
                 else {
                     ctrl.$setValidity("float", false);
+                    ctrl.$setValidity("min", true);
+                    ctrl.$setValidity("max", true);
                     return undefined;
                 }
             });
