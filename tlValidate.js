@@ -285,6 +285,42 @@ mod.directive("tlOnlyNum", function () {
         }
     };
 });
+//Put this directive on a field, where the user is required to input a regex string
+mod.directive("tlRegexInput", function () {
+    var testRegexValidity = function (str) {
+        try {
+            var regex = new RegExp(str);
+            return true;
+        }
+        catch (e) {
+            return false;
+        }
+    };
+    return {
+        require: "ngModel",
+        link: function (scope, elm, attrs, ctrl) {
+            ctrl.$parsers.unshift(function (value) {
+                if (Triarc.strIsEmpty(value)) {
+                    return null;
+                }
+                if (testRegexValidity(value)) {
+                    ctrl.$setValidity("regex", true);
+                    return value;
+                }
+                else {
+                    ctrl.$setValidity("regex", false);
+                    return undefined;
+                }
+            });
+            ctrl.$formatters.push(function (value) {
+                if (Triarc.strNotEmpty(value)) {
+                    ctrl.$setValidity("regex", testRegexValidity(value));
+                }
+                return value;
+            });
+        }
+    };
+});
 var INTEGER_REGEXP = /^\-?\d+$/;
 mod.directive("tlSmartInteger", function () {
     return {
