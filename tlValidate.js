@@ -1,6 +1,6 @@
 var mod = angular.module("tlValidate", []);
 mod.directive("tlValidate", [
-    "$translate", "$animate", "$compile", "$templateCache", function ($translate, $animate, $compile, $templateCache) {
+    "$translate", "$animate", "$compile", "$templateCache", "$sce", function ($translate, $animate, $compile, $templateCache, $sce) {
         return {
             restrict: "E",
             scope: {
@@ -82,7 +82,7 @@ mod.directive("tlValidate", [
                         scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
                             var label = iElement.find(".control-label-text");
-                            var helpText = scope.contextHelp();
+                            var helpText = $sce.trustAsHtml(scope.contextHelp());
                             if (Triarc.strNotEmpty(helpText)) {
                                 if (attrs.hasOwnProperty("tlContextHelpBadge")) {
                                     contextHelp.attr("popover", helpText);
