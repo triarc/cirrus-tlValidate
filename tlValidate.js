@@ -82,10 +82,10 @@ mod.directive("tlValidate", [
                         scope.$watch("contextHelp()", function () {
                             var contextHelp = iElement.find(".context-help");
                             var label = iElement.find(".control-label-text");
-                            var helpText = $sce.trustAsHtml(scope.contextHelp());
+                            var helpText = scope.contextHelp();
                             if (Triarc.strNotEmpty(helpText)) {
                                 if (attrs.hasOwnProperty("tlContextHelpBadge")) {
-                                    contextHelp.attr("popover", helpText);
+                                    contextHelp.attr("popover", $sce.trustAsHtml(helpText));
                                     $compile(contextHelp)(scope);
                                     contextHelp.show();
                                 }
