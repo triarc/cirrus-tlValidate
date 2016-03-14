@@ -8,6 +8,7 @@ mod.directive("tlValidate", [
                 labelText: "&",
                 contextHelp: "&",
                 contextHelpAppendToBody: "&",
+                contextHelpTemplate: "&",
                 validationText: "&",
                 validateNow: "=",
                 explicit: "&",
@@ -90,17 +91,25 @@ mod.directive("tlValidate", [
                                     contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
-                                    label.attr("popover", helpText)
-                                        .attr("popover-trigger", "mouseenter")
+                                    label.attr("popover-trigger", "mouseenter")
                                         .attr("popover-append-to-body", (scope.contextHelpAppendToBody() || false).toString())
                                         .attr("popover-placement", helpPlacement)
                                         .addClass("lablel-with-help");
+                                    var templateName = scope.contextHelpTemplate();
+                                    if (Triarc.strNotEmpty(templateName)) {
+                                        label.attr("popover-template", "'" + templateName + "'");
+                                        scope.$toolTip = helpText;
+                                    }
+                                    else {
+                                        label.attr("popover", helpText);
+                                    }
                                     $compile(label)(scope);
                                 }
                             }
                             else {
                                 contextHelp.hide();
                                 label.removeAttr("popover")
+                                    .removeAttr("popover-template")
                                     .removeAttr("popover-append-to-body")
                                     .removeAttr("popover-trigger")
                                     .removeClass("lablel-with-help");

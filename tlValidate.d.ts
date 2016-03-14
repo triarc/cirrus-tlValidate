@@ -4,6 +4,7 @@ interface IValidateScope extends angular.IScope {
     labelText: () => string;
     contextHelp: () => string;
     contextHelpAppendToBody: () => boolean;
+    contextHelpTemplate: () => string;
     validationText: () => string;
     validateNow: boolean;
     explicit: () => boolean;
@@ -11,5 +12,6 @@ interface IValidateScope extends angular.IScope {
     clearValidationErrors: boolean;
     labelTemplate: () => string;
     validateElement: () => void;
+    $toolTip: string;
 }
 declare var INTEGER_REGEXP: RegExp;
