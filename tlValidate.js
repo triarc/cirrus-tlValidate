@@ -36,22 +36,20 @@ mod.directive("tlValidate", [
                         });
                         var element = iElement.children().first();
                         var isCheckbox = element.attr("type") === "checkbox";
-                        var validationRequiredSpan;
                         // todo configurable
-                        var el = $("<div />").addClass(cssValue).addClass("tooltip-placeholder");
-                        var formGroup = $("<div class=\"form-group\"/>");
-                        var contextHelpDiv = $("<span>?</span>").addClass("badge").addClass("context-help");
-                        contextHelpDiv.attr("popover-placement", helpPlacement);
-                        contextHelpDiv.attr("popover-trigger", "mouseenter");
-                        contextHelpDiv.hide();
+                        var el = $(document.createElement('div')).addClass(cssValue).addClass("tooltip-placeholder");
+                        var formGroup = $(document.createElement('div')).addClass('form-group');
+                        var label;
                         if (isCheckbox) {
-                            var label = $("<label class=\"control-label\"/>").addClass(cssLabel);
-                            label.append(contextHelpDiv);
-                            var tooltipPlaceholder = $("<label />");
+                            label = $(document.createElement('label')).addClass('control-label').addClass(cssLabel);
+                            var tooltipPlaceholder = $(document.createElement('label'));
                             // center the validation error around the label for checkboxes
                             if (centerPlacement) {
                                 formGroup.append(label);
-                                var valueDiv = $("<label class=\"tooltip-placeholder control-label-text label-text\"/>");
+                                var valueDiv = $(document.createElement('label'))
+                                    .addClass('tooltip-placeholder')
+                                    .addClass('control-label-text')
+                                    .addClass('label-text');
                                 valueDiv.append(iElement.children());
                                 valueDiv.addClass(cssValue);
                                 formGroup.append(valueDiv).appendTo(iElement);
@@ -59,61 +57,54 @@ mod.directive("tlValidate", [
                             else {
                                 tooltipPlaceholder.addClass("tooltip-placeholder");
                                 formGroup.append(label).append(tooltipPlaceholder.addClass(cssValue).append(iElement.children())).appendTo(iElement);
-                                tooltipPlaceholder.append($("<text />").addClass("control-label-text label-text"));
-                            }
-                            validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
-                            validationRequiredSpan.hide();
-                            label.prepend(validationRequiredSpan);
-                            if (isRequired) {
-                                validationRequiredSpan.show();
+                                tooltipPlaceholder.append($(document.createElement('text')).addClass("control-label-text label-text"));
                             }
                         }
                         else {
-                            var labelDiv = $("<label class=\"control-label\"/>").addClass(cssLabel).append($("<span/>").addClass("control-label-text label-text"));
-                            formGroup.append(labelDiv);
-                            validationRequiredSpan = $("<span class='validation-required'>&nbsp;*</span>");
-                            validationRequiredSpan.hide();
-                            labelDiv.append(validationRequiredSpan);
-                            if (isRequired) {
-                                validationRequiredSpan.show();
-                            }
-                            labelDiv.append(contextHelpDiv);
+                            label = $(document.createElement('label')).addClass("control-label").addClass(cssLabel);
+                            $(document.createElement("span"))
+                                .addClass("control-label-text label-text").appendTo(label);
+                            formGroup.append(label);
                             formGroup.append(el.append(iElement.children())).appendTo(iElement);
                         }
-                        scope.$watch("contextHelp()", function () {
+                        scope.$watch("contextHelp()", function (newValue) {
+                            var labelText = label.find('.control-label-text');
                             var contextHelp = iElement.find(".context-help");
-                            var label = iElement.find(".control-label-text");
-                            var helpText = scope.contextHelp();
+                            var helpText = newValue;
                             if (Triarc.strNotEmpty(helpText)) {
-                                if (attrs.hasOwnProperty("tlContextHelpBadge")) {
+                                if (contextHelp.length === 0 && attrs.hasOwnProperty("tlContextHelpBadge")) {
+                                    contextHelp = $("<span>?</span>").addClass("badge").addClass("context-help");
+                                    contextHelp.attr("popover-placement", helpPlacement);
+                                    contextHelp.attr("popover-trigger", "mouseenter");
+                                    labelText.append(contextHelp);
                                     contextHelp.attr("popover", helpText);
                                     $compile(contextHelp)(scope);
                                     contextHelp.show();
                                 }
                                 if (attrs.hasOwnProperty("tlContextHelpLink")) {
-                                    label.attr("popover-trigger", "mouseenter")
+                                    labelText.attr("popover-trigger", "mouseenter")
                                         .attr("popover-append-to-body", (scope.contextHelpAppendToBody() || false).toString())
                                         .attr("popover-placement", helpPlacement)
                                         .addClass("lablel-with-help");
                                     var templateName = scope.contextHelpTemplate();
                                     if (Triarc.strNotEmpty(templateName)) {
-                                        label.attr("popover-template", "'" + templateName + "'");
+                                        labelText.attr("popover-template", "'" + templateName + "'");
                                         scope.$toolTip = helpText;
                                     }
                                     else {
-                                        label.attr("popover", helpText);
+                                        labelText.attr("popover", helpText);
                                     }
-                                    $compile(label)(scope);
+                                    $compile(labelText)(scope);
                                 }
                             }
-                            else {
-                                contextHelp.hide();
-                                label.removeAttr("popover")
+                            else if (contextHelp.length > 0) {
+                                contextHelp.remove();
+                                labelText.removeAttr("popover")
                                     .removeAttr("popover-template")
                                     .removeAttr("popover-append-to-body")
                                     .removeAttr("popover-trigger")
                                     .removeClass("lablel-with-help");
-                                $compile(label)(scope);
+                                $compile(labelText)(scope);
                             }
                         });
                         // check if the language string is updated fro the label
@@ -142,14 +133,15 @@ mod.directive("tlValidate", [
                                 remove(tempValEl);
                             }
                         };
-                        scope.$watch("showRequired()", function () {
-                            var showRequired = scope.showRequired();
-                            if (scope.showRequired && showRequired || isRequired) {
-                                validationRequiredSpan.show();
+                        var validationRequiredSpan;
+                        scope.$watch("showRequired()", function (showRequired) {
+                            if ((showRequired || isRequired) && !angular.isObject(validationRequiredSpan)) {
+                                validationRequiredSpan = $(document.createElement('span')).addClass('validation-required').html('&nbsp;*');
+                                label.append(validationRequiredSpan);
                             }
-                            else {
-                                validationRequiredSpan.hide();
-                                hideValidation();
+                            else if (angular.isObject(validationRequiredSpan)) {
+                                validationRequiredSpan.remove();
+                                validationRequiredSpan = null;
                             }
                         });
                         scope.$watch("clearValidationErrors", function () {
@@ -188,10 +180,16 @@ mod.directive("tlValidate", [
                             if (angular.isObject(validationElement)) {
                                 hideValidation();
                             }
-                            validationElement = $($.parseHTML("<div class=\"tooltip fade bottom\" role=\"tooltip\">" +
-                                "<div class=\"tooltip-arrow\"></div>" +
-                                "<div class=\"tooltip-inner\">"
-                                + getErrorName() + "</div></div>"));
+                            validationElement = $(document.createElement('div'))
+                                .addClass('tooltip fade bottom')
+                                .attr('role', 'tooltip');
+                            $(document.createElement('div'))
+                                .addClass('tooltip-arrow')
+                                .appendTo(validationElement);
+                            $(document.createElement('div'))
+                                .addClass('tooltip-inner')
+                                .html(getErrorName())
+                                .appendTo(validationElement);
                             var tooltipElement = getTooltipElement();
                             tooltipElement.after(validationElement);
                             setTimeout(function () {
